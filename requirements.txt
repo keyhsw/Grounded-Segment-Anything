@@ -1,3 +1,4 @@
+accelerate
 addict
 diffusers
 gradio
