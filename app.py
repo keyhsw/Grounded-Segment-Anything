@@ -180,7 +180,7 @@ def show_box(box, ax, label):
     ax.text(x0, y0, label)
 
 
-config_file = 'Grounding_DINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
+config_file = 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
 ckpt_repo_id = "ShilongLiu/GroundingDINO"
 ckpt_filenmae = "groundingdino_swint_ogc.pth"
 sam_checkpoint = './sam_vit_h_4b8939.pth' 
@@ -281,6 +281,12 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
     else:
         print("task_type:{} error!".format(task_type))
 
+def change_task_type(task_type):
+    if task_type == "inpainting":
+        return gr.Textbox.update(visible=True)
+    else:
+        return gr.Textbox.update(visible=False)
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser("Grounded SAM demo", add_help=True)
@@ -295,9 +301,10 @@ if __name__ == "__main__":
         with gr.Row():
             with gr.Column():
                 input_image = gr.Image(source='upload', type="pil")
-                text_prompt = gr.Textbox(label="Detection Prompt")
-                task_type = gr.Textbox(label="task type: det/seg/inpainting")
-                inpaint_prompt = gr.Textbox(label="Inpaint Prompt")
+                task_type = gr.Radio(["detection", "segment", "inpainting"],  value="detection", 
+                                                label='Task type:',interactive=True, visible=True) 
+                text_prompt = gr.Textbox(label="Detection Prompt")                                                
+                inpaint_prompt = gr.Textbox(label="Inpaint Prompt", visible=False)
                 run_button = gr.Button(label="Run")
                 with gr.Accordion("Advanced options", open=False):
                     box_threshold = gr.Slider(
@@ -314,6 +321,6 @@ if __name__ == "__main__":
 
         run_button.click(fn=run_grounded_sam, inputs=[
                         input_image, text_prompt, task_type, inpaint_prompt, box_threshold, text_threshold], outputs=[gallery])
+        task_type.change(fn=change_task_type, inputs=[task_type], outputs=[inpaint_prompt])
 
-    # block.launch(server_name='0.0.0.0', server_port=7589, debug=args.debug, share=args.share)
     block.launch(server_name='0.0.0.0', debug=args.debug, share=args.share)
