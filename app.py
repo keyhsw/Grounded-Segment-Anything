@@ -1,7 +1,7 @@
 
 import subprocess
 
-is 0==1:
+if 0==1:
     result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
     print(f'liuyz_install segment_anything result = {result}')
     result = subprocess.run(['pip', 'install', '-e', 'Grounding_DINO'], check=True)
