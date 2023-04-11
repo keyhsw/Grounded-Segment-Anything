@@ -209,7 +209,7 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
 
     size = image_pil.size
 
-    if task_type == 'seg' or task_type == 'inpainting':
+    if task_type == 'segment' or task_type == 'inpainting':
         # initialize SAM
         predictor = SamPredictor(build_sam(checkpoint=sam_checkpoint))
         image = np.array(image_path)
@@ -233,7 +233,7 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
 
         # masks: [1, 1, 512, 512]
 
-    if task_type == 'det':
+    if task_type == 'detection':
         pred_dict = {
             "boxes": boxes_filt,
             "size": [size[1], size[0]],  # H,W
@@ -245,7 +245,7 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
         image_with_box.save(image_path)
         image_result = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
         return image_result
-    elif task_type == 'seg':
+    elif task_type == 'segment':
         assert sam_checkpoint, 'sam_checkpoint is not found!'
 
         # draw output image
@@ -302,8 +302,8 @@ if __name__ == "__main__":
             with gr.Column():
                 input_image = gr.Image(source='upload', type="pil")
                 task_type = gr.Radio(["detection", "segment", "inpainting"],  value="detection", 
-                                                label='Task type:',interactive=True, visible=True) 
-                text_prompt = gr.Textbox(label="Detection Prompt")                                                
+                                                label='Task type',interactive=True, visible=True) 
+                text_prompt = gr.Textbox(label="Detection Prompt", placeholder="Cannot be empty")                                                
                 inpaint_prompt = gr.Textbox(label="Inpaint Prompt", visible=True)
                 run_button = gr.Button(label="Run")
                 with gr.Accordion("Advanced options", open=False):
