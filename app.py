@@ -304,6 +304,5 @@ if __name__ == "__main__":
         run_button.click(fn=run_grounded_sam, inputs=[
                         input_image, text_prompt, task_type, inpaint_prompt, box_threshold, text_threshold], outputs=[gallery])
 
-
     # block.launch(server_name='0.0.0.0', server_port=7589, debug=args.debug, share=args.share)
     block.launch(server_name='0.0.0.0', debug=args.debug, share=args.share)
