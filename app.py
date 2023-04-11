@@ -304,7 +304,7 @@ if __name__ == "__main__":
                 task_type = gr.Radio(["detection", "segment", "inpainting"],  value="detection", 
                                                 label='Task type:',interactive=True, visible=True) 
                 text_prompt = gr.Textbox(label="Detection Prompt")                                                
-                inpaint_prompt = gr.Textbox(label="Inpaint Prompt", visible=False)
+                inpaint_prompt = gr.Textbox(label="Inpaint Prompt", visible=True)
                 run_button = gr.Button(label="Run")
                 with gr.Accordion("Advanced options", open=False):
                     box_threshold = gr.Slider(
@@ -321,6 +321,6 @@ if __name__ == "__main__":
 
         run_button.click(fn=run_grounded_sam, inputs=[
                         input_image, text_prompt, task_type, inpaint_prompt, box_threshold, text_threshold], outputs=[gallery])
-        task_type.change(fn=change_task_type, inputs=[task_type], outputs=[inpaint_prompt])
+        # task_type.change(fn=change_task_type, inputs=[task_type], outputs=[inpaint_prompt])
 
     block.launch(server_name='0.0.0.0', debug=args.debug, share=args.share)
