@@ -19,5 +19,7 @@ torchvision
 transformers
 yapf
 numba
+segment_anything
+git+https://github.com/IDEA-Research/GroundingDINO
 # GroundingDINO
 # segment_anything
