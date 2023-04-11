@@ -1,5 +1,5 @@
 
-import subprocess
+import subprocess, os, sys
 
 if 0==1:
     result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
@@ -10,14 +10,15 @@ if 0==1:
 result = subprocess.run(['pip', 'list'], check=True)
 print(f'liuyz_pip list result = {result}')
 
-# os.system("pip install -e segment_anything")
-# os.system("pip install -e GroundingDINO")
+if not os.path.exists('/sam_vit_h_4b8939.pth'):
+    result = subprocess.run(['wget', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth'], check=True)
+    print(f'liuyz_wget sam_vit_h_4b8939.pth result = {result}')    
+
 
 import gradio as gr
 
 import argparse
 import copy
-import os
 
 import numpy as np
 import torch
