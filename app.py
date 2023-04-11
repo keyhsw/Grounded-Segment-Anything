@@ -1,10 +1,11 @@
 
 import subprocess
 
-result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
-print(f'liuyz_install segment_anything result = {result}')
-result = subprocess.run(['pip', 'install', '-e', 'Grounding_DINO'], check=True)
-print(f'liuyz_install Grounding_DINO result = {result}')
+is 0==1:
+    result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
+    print(f'liuyz_install segment_anything result = {result}')
+    result = subprocess.run(['pip', 'install', '-e', 'Grounding_DINO'], check=True)
+    print(f'liuyz_install Grounding_DINO result = {result}')
 
 result = subprocess.run(['pip', 'list'], check=True)
 print(f'liuyz_pip list result = {result}')
@@ -183,7 +184,7 @@ def show_box(box, ax, label):
     ax.text(x0, y0, label)
 
 
-config_file = 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
+config_file = 'Grounding_DINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
 ckpt_repo_id = "ShilongLiu/GroundingDINO"
 ckpt_filenmae = "groundingdino_swint_ogc.pth"
 sam_checkpoint = './sam_vit_h_4b8939.pth' 
