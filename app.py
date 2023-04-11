@@ -2,9 +2,12 @@
 import subprocess
 
 result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
-print(f'install segment_anything result = {result}')
+print(f'liuyz_install segment_anything result = {result}')
 result = subprocess.run(['pip', 'install', '-e', 'GroundingDINO'], check=True)
-print(f'install GroundingDINO result = {result}')
+print(f'liuyz_install GroundingDINO result = {result}')
+
+result = subprocess.run(['pip', 'list'], check=True)
+print(f'liuyz_pip list result = {result}')
 
 # os.system("pip install -e segment_anything")
 # os.system("pip install -e GroundingDINO")
