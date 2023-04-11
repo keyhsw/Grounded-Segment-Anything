@@ -1,7 +1,10 @@
+import os
+os.system("pip install -e segment_anything")
+os.system("pip install -e GroundingDINO")
+
 import gradio as gr
 
 import argparse
-import os
 import copy
 
 import numpy as np
