@@ -1,19 +1,20 @@
 
 import subprocess, os, sys
 
-if 0==1:
-    result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
-    print(f'liuyz_install segment_anything result = {result}')
-    result = subprocess.run(['pip', 'install', '-e', 'Grounding_DINO'], check=True)
-    print(f'liuyz_install Grounding_DINO result = {result}')
+if 0==0:
+    # result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
+    # print(f'liuyz_install segment_anything result = {result}')
+
+    sys.path.insert(0, './Grounding_DINO')
+    # result = subprocess.run(['pip', 'install', '-e', 'Grounding_DINO'], check=True)
+    # print(f'liuyz_install Grounding_DINO result = {result}')
 
 result = subprocess.run(['pip', 'list'], check=True)
 print(f'liuyz_pip list result = {result}')
 
-if not os.path.exists('/sam_vit_h_4b8939.pth'):
+if not os.path.exists('./sam_vit_h_4b8939.pth'):
     result = subprocess.run(['wget', 'https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth'], check=True)
     print(f'liuyz_wget sam_vit_h_4b8939.pth result = {result}')    
-
 
 import gradio as gr
 
@@ -26,10 +27,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 # Grounding DINO
 import Grounding_DINO.groundingdino.datasets.transforms as T
-from groundingdino.models import build_model
-from groundingdino.util import box_ops
-from groundingdino.util.slconfig import SLConfig
-from groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
+from Grounding_DINO.groundingdino.models import build_model
+from Grounding_DINO.groundingdino.util import box_ops
+from Grounding_DINO.groundingdino.util.slconfig import SLConfig
+from Grounding_DINO.groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
 
 # segment anything
 from segment_anything import build_sam, SamPredictor 
