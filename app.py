@@ -1,11 +1,19 @@
-import os
-os.system("pip install -e segment_anything")
-os.system("pip install -e GroundingDINO")
+
+import subprocess
+
+result = subprocess.run(['pip', 'install', '-e', 'segment_anything'], check=True)
+print(f'install segment_anything result = {result}')
+result = subprocess.run(['pip', 'install', '-e', 'GroundingDINO'], check=True)
+print(f'install GroundingDINO result = {result}')
+
+# os.system("pip install -e segment_anything")
+# os.system("pip install -e GroundingDINO")
 
 import gradio as gr
 
 import argparse
 import copy
+import os
 
 import numpy as np
 import torch
