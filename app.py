@@ -23,7 +23,7 @@ import torch
 from PIL import Image, ImageDraw, ImageFont
 
 # Grounding DINO
-import groundingdino.datasets.transforms as T
+import Grounding_DINO.groundingdino.datasets.transforms as T
 from groundingdino.models import build_model
 from groundingdino.util import box_ops
 from groundingdino.util.slconfig import SLConfig
