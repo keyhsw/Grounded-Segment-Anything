@@ -116,17 +116,15 @@ def load_image(image_path):
     image, _ = transform(image_pil, None)  # 3, h, w
     return image_pil, image
 
-
 def load_model(model_config_path, model_checkpoint_path, device):
     args = SLConfig.fromfile(model_config_path)
     args.device = device
     model = build_model(args)
-    checkpoint = torch.load(model_checkpoint_path, map_location="cpu")
+    checkpoint = torch.load(model_checkpoint_path, map_location=device) #"cpu")
     load_res = model.load_state_dict(clean_state_dict(checkpoint["model"]), strict=False)
     print(load_res)
     _ = model.eval()
     return model
-
 
 def get_grounding_output(model, image, caption, box_threshold, text_threshold, with_logits=True, device="cpu"):
     caption = caption.lower()
@@ -172,13 +170,11 @@ def show_mask(mask, ax, random_color=False):
     mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
     ax.imshow(mask_image)
 
-
 def show_box(box, ax, label):
     x0, y0 = box[0], box[1]
     w, h = box[2] - box[0], box[3] - box[1]
     ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2)) 
     ax.text(x0, y0, label)
-
 
 config_file = 'GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py'
 ckpt_repo_id = "ShilongLiu/GroundingDINO"
@@ -189,6 +185,19 @@ device = "cuda"
 
 device = get_device()
 
+# initialize groundingdino model
+groundingdino_model = load_model_hf(config_file, ckpt_repo_id, ckpt_filenmae)
+
+# initialize SAM
+sam_predictor = SamPredictor(build_sam(checkpoint=sam_checkpoint))
+
+# initialize stable-diffusion-inpainting
+sd_pipe = StableDiffusionInpaintPipeline.from_pretrained(
+        "runwayml/stable-diffusion-inpainting", 
+        # torch_dtype=torch.float16
+)
+sd_pipe = sd_pipe.to(device)
+
 def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_threshold, text_threshold):
     assert text_prompt, 'text_prompt is not found!'
 
@@ -196,24 +205,20 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
     os.makedirs(output_dir, exist_ok=True)
     # load image
     image_pil, image = load_image(image_path.convert("RGB"))
-    # load model
-    model = load_model_hf(config_file, ckpt_repo_id, ckpt_filenmae)
 
     # visualize raw image
     image_pil.save(os.path.join(output_dir, "raw_image.jpg"))
 
     # run grounding dino model
     boxes_filt, pred_phrases = get_grounding_output(
-        model, image, text_prompt, box_threshold, text_threshold, device=device
+        groundingdino_model, image, text_prompt, box_threshold, text_threshold, device=device
     )
 
     size = image_pil.size
 
     if task_type == 'segment' or task_type == 'inpainting':
-        # initialize SAM
-        predictor = SamPredictor(build_sam(checkpoint=sam_checkpoint))
         image = np.array(image_path)
-        predictor.set_image(image)
+        sam_predictor.set_image(image)
 
         H, W = size[1], size[0]
         for i in range(boxes_filt.size(0)):
@@ -222,9 +227,9 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
             boxes_filt[i][2:] += boxes_filt[i][:2]
 
         boxes_filt = boxes_filt.cpu()
-        transformed_boxes = predictor.transform.apply_boxes_torch(boxes_filt, image.shape[:2])
+        transformed_boxes = sam_predictor.transform.apply_boxes_torch(boxes_filt, image.shape[:2])
 
-        masks, _, _ = predictor.predict_torch(
+        masks, _, _ = sam_predictor.predict_torch(
             point_coords = None,
             point_labels = None,
             boxes = transformed_boxes,
@@ -266,14 +271,8 @@ def run_grounded_sam(image_path, text_prompt, task_type, inpaint_prompt, box_thr
         mask = masks[0][0].cpu().numpy() # simply choose the first mask, which will be refine in the future release
         mask_pil = Image.fromarray(mask)
         image_pil = Image.fromarray(image)
-        
-        pipe = StableDiffusionInpaintPipeline.from_pretrained(
-                "runwayml/stable-diffusion-inpainting", 
-                # torch_dtype=torch.float16
-        )
-        pipe = pipe.to(device)
 
-        image = pipe(prompt=inpaint_prompt, image=image_pil, mask_image=mask_pil).images[0]
+        image = sd_pipe(prompt=inpaint_prompt, image=image_pil, mask_image=mask_pil).images[0]
         image_path = os.path.join(output_dir, "grounded_sam_inpainting_output.jpg")
         image.save(image_path)
         image_result = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
