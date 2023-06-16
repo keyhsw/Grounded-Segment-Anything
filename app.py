@@ -323,7 +323,6 @@ if __name__ == "__main__":
         # task_type.change(fn=change_task_type, inputs=[task_type], outputs=[inpaint_prompt])
 
         DESCRIPTION = '### This demo from [Grounded-Segment-Anything](https://github.com/IDEA-Research/Grounded-Segment-Anything). Thanks for their excellent work.'
-        DESCRIPTION += f'<p>For faster inference without waiting in queue, you may duplicate the space and upgrade to GPU in settings. <a href="https://huggingface.co/spaces/yizhangliu/Grounded-Segment-Anything?duplicate=true"><img style="display: inline; margin-top: 0em; margin-bottom: 0em" src="https://bit.ly/3gLdBN6" alt="Duplicate Space" /></a></p>'
         gr.Markdown(DESCRIPTION)
 
     block.launch(server_name='0.0.0.0', debug=args.debug, share=args.share)
